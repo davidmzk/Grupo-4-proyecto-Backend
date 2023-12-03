@@ -63,25 +63,22 @@ class Producto(db.Model):  # Producto hereda de db.Model
     Esta clase representa la tabla "Producto" en la base de datos.
     """
     id = db.Column(db.Integer, primary_key=True)
-    modelo = db.Column(db.String(100))
-    tipo_de_producto = (db.String(100))
-    precio = db.Column(db.Integer)
-    imagen = db.Column(db.String(400))
+    tipo_producto = db.Column(db.String(30)) # tipo de producto (termotanques/paneles/controladores_modulares/baterias_de_gel/generadores_eolicos)
+    modelo = db.Column(db.String(50))   # nombre del modelo
+    descripcion = (db.String(300))      # breve descripcion
+    proveedor = (db.String(50))         # nombre proveedor
+    precio = db.Column(db.Integer)      # monto
+    imagen = db.Column(db.String(400))  # imagen
 
-    def __init__(self, modelo, tipo_de_producto, precio, imagen):
-        """
-        Constructor de la clase Producto.
-
-        Args:
-            nombre (str): Nombre del producto.
-            tipo_de_producto (int): Familia de pertenencia del producto (termotanques/paneles/controladores_modulares/baterias_de_gel/generadores_eolicos)
-            precio (int): Precio del producto.
-            imagen (str): URL o ruta de la imagen del producto.
-        """
-        self.modelo = modelo
-        self.tipo_de_producto = tipo_de_producto
-        self.precio = precio
-        self.imagen = imagen
+    # CONSTRUCTOR DE LA CLASE PRODUCTO 
+    def __init__(self, tipo_producto, modelo, descripcion, proveedor, precio, imagen):
+       
+       self.tipo_producto = producto
+       self.modelo = modelo
+       self.descripcion = descripcion
+       self.proveedor = proveedor
+       self.precio = precio
+       self.imagen = imagen
 
     # Se pueden agregar más clases para definir otras tablas en la base de datos
 
@@ -90,17 +87,13 @@ with app.app_context():
 
 # Definición del esquema para la clase Producto
 class ProductoSchema(ma.Schema):
-    """
-    Esquema de la clase Producto.
-
-    Este esquema define los campos que serán serializados/deserializados
-    para la clase Producto.
-    """
+    # Esquema de la clase Producto. Este esquema define los campos que serán serializados/deserializados para la clase Producto.
+    
     class Meta:
-        fields = ("id", "modelo", "tipo_de_producto", "precio", "imagen")
+        fields = ("id", "producto", "modelo", "descripcion", "proveedor", "precio", "imagen")
 
-producto_schema = ProductoSchema()  # Objeto para serializar/deserializar un solo producto
-productos_schema = ProductoSchema(many=True)  # Objeto para serializar/deserializar múltiples productos
+producto_schema = ProductoSchema()              # Objeto para serializar/deserializar un solo producto
+productos_schema = ProductoSchema(many=True)    # Objeto para serializar/deserializar múltiples productos
 
 '''
 Este código define un endpoint que permite obtener todos los productos de la base de datos y los devuelve como un JSON en respuesta a una solicitud GET a la ruta /productos.
@@ -118,9 +111,9 @@ def get_Productos():
 
     Retorna un JSON con todos los registros de la tabla de productos.
     """
-    all_productos = Producto.query.all()  # Obtiene todos los registros de la tabla de productos
-    result = productos_schema.dump(all_productos)  # Serializa los registros en formato JSON
-    return jsonify(result)  # Retorna el JSON de todos los registros de la tabla
+    all_productos = Producto.query.all()            # Obtiene todos los registros de la tabla de productos
+    result = productos_schema.dump(all_productos)   # Serializa los registros en formato JSON
+    return jsonify(result)                          # Retorna el JSON de todos los registros de la tabla
 
 '''
 El código que sigue a continuación termina de resolver la API de gestión de productos, a continuación se destaca los principales detalles de cada endpoint, incluyendo su funcionalidad y el tipo de respuesta que se espera.
@@ -148,8 +141,8 @@ def get_producto(id):
 
     Retorna un JSON con la información del producto correspondiente al ID proporcionado.
     """
-    producto = Producto.query.get(id)  # Obtiene el producto correspondiente al ID recibido
-    return producto_schema.jsonify(producto)  # Retorna el JSON del producto
+    producto = Producto.query.get(id)           # Obtiene el producto correspondiente al ID recibido
+    return producto_schema.jsonify(producto)    # Retorna el JSON del producto
 
 @app.route("/productos/<id>", methods=["DELETE"])
 def delete_producto(id):
@@ -158,10 +151,10 @@ def delete_producto(id):
 
     Elimina el producto correspondiente al ID proporcionado y retorna un JSON con el registro eliminado.
     """
-    producto = Producto.query.get(id)  # Obtiene el producto correspondiente al ID recibido
-    db.session.delete(producto)  # Elimina el producto de la sesión de la base de datos
-    db.session.commit()  # Guarda los cambios en la base de datos
-    return producto_schema.jsonify(producto)  # Retorna el JSON del producto eliminado
+    producto = Producto.query.get(id)           # Obtiene el producto correspondiente al ID recibido
+    db.session.delete(producto)                 # Elimina el producto de la sesión de la base de datos
+    db.session.commit()                         # Guarda los cambios en la base de datos
+    return producto_schema.jsonify(producto)    # Retorna el JSON del producto eliminado
 
 @app.route("/productos", methods=["POST"])  # Endpoint para crear un producto
 def create_producto():
@@ -171,14 +164,16 @@ def create_producto():
     Lee los datos proporcionados en formato JSON por el cliente y crea un nuevo registro de producto en la base de datos.
     Retorna un JSON con el nuevo producto creado.
     """
-    modelo = request.json["modelo"]  # Obtiene el nombre del producto del JSON proporcionado
-    tipo_de_producto = request.json["tipo_de_producto"]  # Obtiene el tipo de producto del JSON proporcionado
-    precio = request.json["precio"]  # Obtiene el precio del producto del JSON proporcionado
-    imagen = request.json["imagen"]  # Obtiene la imagen del producto del JSON proporcionado
-    new_producto = Producto(modelo, tipo_de_producto, precio, imagen)  # Crea un nuevo objeto Producto con los datos proporcionados
-    db.session.add(new_producto)  # Agrega el nuevo producto a la sesión de la base de datos
-    db.session.commit()  # Guarda los cambios en la base de datos
-    return producto_schema.jsonify(new_producto)  # Retorna el JSON del nuevo producto creado
+    tipo_producto = request.json["tipo_producto"]                                               # Obtiene el tipo de producto del JSON proporcionado
+    modelo = request.json["modelo"]                                                             # Obtiene el nombre del producto del JSON proporcionado
+    descripcion = request.json["descripcion"]                                                   # Obtiene la descripcion del JSON proporcionado
+    proveedor = request.json["proveedor"]                                                       # Obtiene el nombre del proveedor del JSON proporcionado
+    precio = request.json["precio"]                                                             # Obtiene el precio del producto del JSON proporcionado
+    imagen = request.json["imagen"]                                                             # Obtiene la imagen del producto del JSON proporcionado
+    new_producto = Producto(tipo_producto, modelo, descripcion, proveedor, precio, imagen)      # Crea un nuevo objeto Producto con los datos proporcionados
+    db.session.add(new_producto)                                                                # Agrega el nuevo producto a la sesión de la base de datos
+    db.session.commit()                                                                         # Guarda los cambios en la base de datos
+    return producto_schema.jsonify(new_producto)                                                # Retorna el JSON del nuevo producto creado
 
 @app.route("/productos/<id>", methods=["PUT"])  # Endpoint para actualizar un producto
 def update_producto(id):
@@ -191,8 +186,10 @@ def update_producto(id):
     producto = Producto.query.get(id)  # Obtiene el producto existente con el ID especificado
 
     # Actualiza los atributos del producto con los datos proporcionados en el JSON
-    producto.modelo = request.json["modelo"]
-    producto.tipo_de_producto = request.json["tipo_de_producto"]
+    producto.tipo_producto = request.json["tipo_producto"]                                               
+    producto.modelo = request.json["modelo"]                                                             
+    producto.descripcion = request.json["descripcion"]                                                   
+    producto.proveedor = request.json["proveedor"]
     producto.precio = request.json["precio"]
     producto.imagen = request.json["imagen"]
 
