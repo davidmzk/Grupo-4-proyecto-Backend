@@ -63,12 +63,12 @@ class Producto(db.Model):  # Producto hereda de db.Model
     Esta clase representa la tabla "Producto" en la base de datos.
     """
     id = db.Column(db.Integer, primary_key=True)
-    tipo_producto = db.Column(db.String(30)) # tipo de producto (termotanques/paneles/controladores_modulares/baterias_de_gel/generadores_eolicos)
-    modelo = db.Column(db.String(50))   # nombre del modelo
-    descripcion = (db.String(300))      # breve descripcion
-    proveedor = (db.String(50))         # nombre proveedor
-    precio = db.Column(db.Integer)      # monto
-    imagen = db.Column(db.String(400))  # imagen
+    tipo_producto = db.Column(db.String(30))    # tipo de producto (termotanques/paneles/controladores_modulares/baterias_de_gel/generadores_eolicos)
+    modelo = db.Column(db.String(50))           # nombre del modelo
+    descripcion = (db.String(300))              # breve descripcion
+    proveedor = (db.String(50))                 # nombre proveedor
+    precio = db.Column(db.Integer)              # monto
+    imagen = db.Column(db.String(400))          # imagen
 
     # CONSTRUCTOR DE LA CLASE PRODUCTO 
     def __init__(self, tipo_producto, modelo, descripcion, proveedor, precio, imagen):
