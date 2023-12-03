@@ -73,7 +73,7 @@ class Producto(db.Model):  # Producto hereda de db.Model
     # CONSTRUCTOR DE LA CLASE PRODUCTO 
     def __init__(self, tipo_producto, modelo, descripcion, proveedor, precio, imagen):
        
-       self.tipo_producto = producto
+       self.tipo_producto = tipo_producto
        self.modelo = modelo
        self.descripcion = descripcion
        self.proveedor = proveedor
